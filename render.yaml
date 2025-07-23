@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: dlogs
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn dlogs_project.wsgi
+    envVars:
+      - key: DEBUG
+        value: False
+      - key: SECRET_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+    preDeployCommand: python manage.py migrate
