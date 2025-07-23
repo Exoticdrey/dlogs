@@ -5,8 +5,22 @@ from django.contrib import messages
 from django.conf import settings
 from .models import Post, Category, Comment
 from .forms import CommentForm, SearchForm
+from django.contrib.auth import get_user_model
+from django.http import HttpResponse
+from django.views.decorators.http import require_GET
+from django.http import HttpResponseForbidden
 
-# Create your views here.
+@require_GET
+def create_superuser_once(request):
+    if request.GET.get("secret") != "create123":  # secret token
+        return HttpResponseForbidden("Not allowed.")
+
+    User = get_user_model()
+    if not User.objects.filter(username="admin").exists():
+        User.objects.create_superuser("admin", "admin@example.com", "adminpassword123")
+        return HttpResponse("Superuser created!")
+    return HttpResponse("Superuser already exists.")
+
 
 def home(request):
     """Homepage view with paginated posts"""
