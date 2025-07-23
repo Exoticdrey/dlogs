@@ -5,8 +5,7 @@ from django.contrib import messages
 from django.conf import settings
 from .models import Post, Category, Comment
 from .forms import CommentForm, SearchForm
-from django.contrib.auth import get_user_model
-from django.http import HttpResponse
+
 # Create your views here.
 
 def home(request):
@@ -134,15 +133,6 @@ def search_posts(request):
         'search_form': SearchForm(initial={'query': query}),
     }
     return render(request, 'blog/search_results.html', context)
-
-
-def create_superuser(request):
-    User = get_user_model()
-    if not User.objects.filter(username='admin').exists():
-        User.objects.create_superuser('admin', 'admin@example.com', 'adminpassword123')
-        return HttpResponse("Superuser created")
-    return HttpResponse("Superuser already exists")
-
 
 # def about(request):
 #     """About page"""
