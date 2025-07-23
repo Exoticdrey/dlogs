@@ -133,12 +133,6 @@ def search_posts(request):
     }
     return render(request, 'blog/search_results.html', context)
 
-from django.core.management import call_command
-from django.http import HttpResponse
-
-def run_migrations(request):
-    call_command('migrate')
-    return HttpResponse("Migrations complete.")
 
 
 # def about(request):
