@@ -133,28 +133,35 @@ def search_posts(request):
     }
     return render(request, 'blog/search_results.html', context)
 
+from django.core.management import call_command
+from django.http import HttpResponse
 
-def about(request):
-    """About page"""
-    categories = Category.objects.all()
-    recent_posts = Post.objects.filter(is_published=True)[:4]
+def run_migrations(request):
+    call_command('migrate')
+    return HttpResponse("Migrations complete.")
+
+
+# def about(request):
+#     """About page"""
+#     categories = Category.objects.all()
+#     recent_posts = Post.objects.filter(is_published=True)[:4]
     
-    context = {
-        'categories': categories,
-        'recent_posts': recent_posts,
-        'search_form': SearchForm(),
-    }
-    return render(request, 'blog/about.html', context)
+#     context = {
+#         'categories': categories,
+#         'recent_posts': recent_posts,
+#         'search_form': SearchForm(),
+#     }
+#     return render(request, 'blog/about.html', context)
 
 
-def contact(request):
-    """Contact page"""
-    categories = Category.objects.all()
-    recent_posts = Post.objects.filter(is_published=True)[:4]
+# def contact(request):
+#     """Contact page"""
+#     categories = Category.objects.all()
+#     recent_posts = Post.objects.filter(is_published=True)[:4]
     
-    context = {
-        'categories': categories,
-        'recent_posts': recent_posts,
-        'search_form': SearchForm(),
-    }
-    return render(request, 'blog/contact.html', context)
+#     context = {
+#         'categories': categories,
+#         'recent_posts': recent_posts,
+#         'search_form': SearchForm(),
+#     }
+#     return render(request, 'blog/contact.html', context)
