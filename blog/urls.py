@@ -1,8 +1,6 @@
 from django.urls import path
 from . import views
-from .views import create_superuser_if_not_exists
 
-create_superuser_if_not_exists()
 
 app_name = 'blog'
 
