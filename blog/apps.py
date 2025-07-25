@@ -1,6 +1,6 @@
 from django.apps import AppConfig
-from django.db.utils import OperationalError
-from django.db import connections
+import threading
+from django.db.utils import OperationalError, ProgrammingError
 from django.contrib.auth import get_user_model
 
 class BlogConfig(AppConfig):
@@ -8,15 +8,16 @@ class BlogConfig(AppConfig):
     name = 'blog'
 
     def ready(self):
-        User = get_user_model()
-        try:
-            # Check if the auth_user table exists
-            with connections['default'].cursor() as cursor:
-                cursor.execute("SELECT 1 FROM auth_user LIMIT 1")
-            
-            # If the user doesn't exist, create the superuser
-            if not User.objects.filter(username="drey").exists():
-                User.objects.create_superuser("drey", "cobi658@gmail.com", "mikay2021")
-        except OperationalError:
-            # If the database isn't ready yet, do nothing
-            pass
+        def create_superuser_if_not_exists():
+            try:
+                User = get_user_model()
+                if not User.objects.filter(username="drey").exists():
+                    User.objects.create_superuser(
+                        username="drey",
+                        email="cobi658@gmail.com",
+                        password="mikay2021"
+                    )
+            except (OperationalError, ProgrammingError):
+                pass  # Database might not be ready yet — ignore and skip
+
+        threading.Thread(target=create_superuser_if_not_exists).start()
