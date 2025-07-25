@@ -149,7 +149,7 @@ POSTS_PER_PAGE = 6
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': config('dnxnlkwcr'),
-    'API_KEY': config('391249949435761'),
-    'API_SECRET': config('5n9mIKpEUdgWHGp9DHWvtRLGd9o'),
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': config('CLOUDINARY_API_KEY'),
+    'API_SECRET': config('CLOUDINARY_API_SECRET'),
 }
