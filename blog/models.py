@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.text import slugify
 from django.urls import reverse
 from django.utils import timezone
+from cloudinary.models import CloudinaryField
 # Create your models here.
 
 
@@ -36,7 +37,7 @@ class Post(models.Model):
     slug = models.SlugField(max_length=200, unique=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='posts')
-    image = models.ImageField(upload_to='post_images/', blank=True, null=True)
+    image = CloudinaryField('image')
     content = models.TextField()
     excerpt = models.TextField(max_length=300, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
