@@ -6,7 +6,7 @@ dj-database-url==3.0.1
 Django==5.2.1
 django-cloudinary-storage==0.3.0
 django-cors-headers==4.7.0
-djangorestframework @ file:///C:/Users/USER/Desktop/simply%20health/pharmacy_site/djangorestframework-3.16.0-py3-none-any.whl
+djangorestframework==3.16.0
 gunicorn==23.0.0
 idna==3.10
 packaging==25.0
