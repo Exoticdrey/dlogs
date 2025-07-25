@@ -12,11 +12,6 @@ class CommentForm(forms.ModelForm):
                 'placeholder': 'Enter your name',
                 'required': True
             }),
-            'email': forms.EmailInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter your email',
-                'required': True
-            }),
             'text': forms.Textarea(attrs={
                 'class': 'form-control',
                 'placeholder': 'Write your comment here...',
@@ -26,7 +21,6 @@ class CommentForm(forms.ModelForm):
         }
         labels = {
             'name': 'Name',
-            'email': 'Email',
             'text': 'Comment'
         }
 
@@ -38,7 +32,7 @@ class CommentForm(forms.ModelForm):
 
     def clean_text(self):
         text = self.cleaned_data.get('text')
-        if len(text) < 10:
+        if len(text) < 5:
             raise forms.ValidationError('Comment must be at least 10 characters long.')
         return text
 
