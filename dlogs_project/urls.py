@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
-from yourapp.sitemaps import PostSitemap
+from blog.sitemaps import PostSitemap
 
 sitemaps = {
     'posts': PostSitemap,
