@@ -3,7 +3,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.contrib import messages
 from django.conf import settings
-from .models import Post, Category, Comment
+from .models import Post, Category, Comment, Like
+from django.http import JsonResponse
 from .forms import CommentForm, SearchForm
 from django.contrib.auth import get_user_model
 
@@ -36,33 +37,48 @@ def home(request):
 
 
 def post_detail(request, slug):
-    """Individual post detail view"""
     post = get_object_or_404(Post, slug=slug, is_published=True)
-    comments = post.comments.filter(is_approved=True)
+    comments = Comment.objects.filter(post=post, parent=None, is_approved=True)
     categories = Category.objects.all()
     recent_posts = Post.objects.filter(is_published=True).exclude(id=post.id)[:4]
-    
-    # Handle comment form submission
+
     if request.method == 'POST':
-        comment_form = CommentForm(request.POST)
-        if comment_form.is_valid():
-            comment = comment_form.save(commit=False)
-            comment.post = post
-            comment.save()
-            messages.success(request, 'Your comment has been posted successfully!')
-            return redirect('blog:post_detail', slug=post.slug)
-    else:
-        comment_form = CommentForm()
-    
-    context = {
+        name = request.POST.get('name')
+        text = request.POST.get('text')
+        parent_id = request.POST.get('parent_id')
+
+        parent = Comment.objects.get(id=parent_id) if parent_id else None
+
+        Comment.objects.create(
+            post=post,
+            name=name,
+            text=text,
+            parent=parent
+        )
+        messages.success(request, 'Your comment was added!')
+        return redirect(post.get_absolute_url())
+
+    return render(request, 'blog/post_detail.html', {
         'post': post,
         'comments': comments,
-        'comment_form': comment_form,
         'categories': categories,
         'recent_posts': recent_posts,
-        'search_form': SearchForm(),
-    }
-    return render(request, 'blog/post_detail.html', context)
+        'search_form': SearchForm(),  # optional
+    })
+
+def like_post(request, post_slug):
+    post = get_object_or_404(Post, slug=post_slug)
+    ip = get_client_ip(request)
+
+    like, created = Like.objects.get_or_create(post=post, ip_address=ip)
+    return JsonResponse({
+        'status': 'liked' if created else 'already_liked',
+        'likes': post.likes.count()
+    })
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    return x_forwarded_for.split(',')[0] if x_forwarded_for else request.META.get('REMOTE_ADDR')
 
 
 def create_superuser_if_not_exists():
