@@ -9,6 +9,7 @@
             <span>{{ post.author.first_name }} {{ post.author.last_name }}</span>
             <span>{{ post.created_at|date:"F d, Y" }}</span>
         </div>
+
         <h1 class="post-title">{{ post.title }}</h1>
         
         {% if post.image %}
@@ -21,10 +22,17 @@
             {{ post.content|linebreaks }}
         </div>
 
+        <!-- ❤️ Like Button -->
+        <div class="like-section" style="margin: 20px 0;">
+            <button id="likeBtn" data-post-slug="{{ post.slug }}">
+                ❤️ Like (<span id="likeCount">{{ post.likes.count }}</span>)
+            </button>
+        </div>
+
         <!-- Comments Section -->
         <div class="comments-section">
             <h3 class="comments-title">Comments ({{ comments.count }})</h3>
-            
+
             <!-- Comment Form -->
             <form class="comment-form" method="post">
                 {% csrf_token %}
@@ -72,4 +80,20 @@
             </div>
         </div>
     </div>
+
+    <!-- Like Button Script -->
+    <script>
+    document.getElementById('likeBtn')?.addEventListener('click', function () {
+        const slug = this.dataset.postSlug;
+        fetch(`/like/${slug}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'liked') {
+                    document.getElementById('likeCount').innerText = data.likes;
+                } else {
+                    alert("You've already liked this post.");
+                }
+            });
+    });
+    </script>
 {% endblock %}
