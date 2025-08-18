@@ -37,33 +37,23 @@ def home(request):
 
 
 def post_detail(request, slug):
-    post = get_object_or_404(Post, slug=slug, is_published=True)
-    comments = Comment.objects.filter(post=post, parent=None, is_approved=True)
-    categories = Category.objects.all()
-    recent_posts = Post.objects.filter(is_published=True).exclude(id=post.id)[:4]
+    post = get_object_or_404(Post, slug=slug)
+    comments = post.comments.filter(parent__isnull=True).order_by('-created_at')  # top-level only
 
     if request.method == 'POST':
-        name = request.POST.get('name')
-        text = request.POST.get('text')
-        parent_id = request.POST.get('parent_id')
-
-        parent = Comment.objects.get(id=parent_id) if parent_id else None
-
-        Comment.objects.create(
-            post=post,
-            name=name,
-            text=text,
-            parent=parent
-        )
-        messages.success(request, 'Your comment was added!')
-        return redirect(post.get_absolute_url())
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.save()
+            return redirect('blog:post_detail', slug=slug)
+    else:
+        form = CommentForm()
 
     return render(request, 'blog/post_detail.html', {
         'post': post,
         'comments': comments,
-        'categories': categories,
-        'recent_posts': recent_posts,
-        'search_form': SearchForm(),  # optional
+        'comment_form': form
     })
 
 def like_post(request, post_slug):
