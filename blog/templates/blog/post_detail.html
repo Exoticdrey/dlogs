@@ -3,97 +3,102 @@
 {% block title %}{{ post.title }} - Dlogs{% endblock %}
 
 {% block content %}
-    <div class="post-detail">
-        <div class="post-meta">
-            <span class="post-category">{{ post.category.name }}</span>
-            <span>{{ post.author.first_name }} {{ post.author.last_name }}</span>
-            <span>{{ post.created_at|date:"F d, Y" }}</span>
-        </div>
+<div class="post-detail">
+    <div class="post-meta">
+        <span class="post-category">{{ post.category.name }}</span>
+        <span>{{ post.author.first_name }} {{ post.author.last_name }}</span>
+        <span>{{ post.created_at|date:"F d, Y" }}</span>
+    </div>
+    <h1 class="post-title">{{ post.title }}</h1>
 
-        <h1 class="post-title">{{ post.title }}</h1>
-        
-        {% if post.image %}
-            <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-detail-image">
-        {% else %}
-            <div class="post-detail-image"></div>
-        {% endif %}
-        
-        <div class="post-detail-content">
-            {{ post.content|linebreaks }}
-        </div>
+    {% if post.image %}
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-detail-image">
+    {% else %}
+        <div class="post-detail-image"></div>
+    {% endif %}
 
-        <!-- ❤️ Like Button -->
-        <div class="like-section" style="margin: 20px 0;">
-            <button id="likeBtn" data-post-slug="{{ post.slug }}">
-                ❤️ Like (<span id="likeCount">{{ post.likes.count }}</span>)
-            </button>
-        </div>
-
-        <!-- Comments Section -->
-        <div class="comments-section">
-            <h3 class="comments-title">Comments ({{ comments.count }})</h3>
-
-            <!-- Comment Form -->
-            <form class="comment-form" method="post">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="{{ comment_form.name.id_for_label }}">{{ comment_form.name.label }}</label>
-                    {{ comment_form.name }}
-                    {% if comment_form.name.errors %}
-                        <div class="error">{{ comment_form.name.errors }}</div>
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    <label for="{{ comment_form.email.id_for_label }}">{{ comment_form.email.label }}</label>
-                    {{ comment_form.email }}
-                    {% if comment_form.email.errors %}
-                        <div class="error">{{ comment_form.email.errors }}</div>
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    <label for="{{ comment_form.text.id_for_label }}">{{ comment_form.text.label }}</label>
-                    {{ comment_form.text }}
-                    {% if comment_form.text.errors %}
-                        <div class="error">{{ comment_form.text.errors }}</div>
-                    {% endif %}
-                </div>
-                <button type="submit" class="submit-btn">Post Comment</button>
-            </form>
-
-            <!-- Comments List -->
-            <div class="comments-list">
-                {% for comment in comments %}
-                    <div class="comment">
-                        <div class="comment-header">
-                            <span class="comment-author">{{ comment.name }}</span>
-                            <span class="comment-date">{{ comment.created_at|date:"F d, Y" }}</span>
-                        </div>
-                        <div class="comment-text">
-                            {{ comment.text|linebreaks }}
-                        </div>
-                    </div>
-                {% empty %}
-                    <div class="no-results">
-                        <p>No comments yet. Be the first to comment!</p>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
+    <div class="post-detail-content">
+        {{ post.content|linebreaks }}
     </div>
 
-    <!-- Like Button Script -->
-    <script>
-    document.getElementById('likeBtn')?.addEventListener('click', function () {
-        const slug = this.dataset.postSlug;
-        fetch(`/like/${slug}/`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'liked') {
-                    document.getElementById('likeCount').innerText = data.likes;
-                } else {
-                    alert("You've already liked this post.");
-                }
-            });
-    });
-    </script>
+    <!-- 👍 LIKE BUTTON -->
+    <div class="like-section" style="margin-top: 20px;">
+        <button id="likeBtn" data-post-slug="{{ post.slug }}">
+            ❤️ Like (<span id="likeCount">{{ post.likes.count }}</span>)
+        </button>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="comments-section">
+        <h3 class="comments-title">Comments ({{ comments.count }})</h3>
+
+        <!-- Comment Form -->
+        <form class="comment-form" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="{{ comment_form.name.id_for_label }}">{{ comment_form.name.label }}</label>
+                {{ comment_form.name }}
+                {% if comment_form.name.errors %}
+                    <div class="error">{{ comment_form.name.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="{{ comment_form.email.id_for_label }}">{{ comment_form.email.label }}</label>
+                {{ comment_form.email }}
+                {% if comment_form.email.errors %}
+                    <div class="error">{{ comment_form.email.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="{{ comment_form.text.id_for_label }}">{{ comment_form.text.label }}</label>
+                {{ comment_form.text }}
+                {% if comment_form.text.errors %}
+                    <div class="error">{{ comment_form.text.errors }}</div>
+                {% endif %}
+            </div>
+            <button type="submit" class="submit-btn">Post Comment</button>
+        </form>
+
+        <!-- Comments List -->
+        <div class="comments-list">
+            {% for comment in comments %}
+                <div class="comment">
+                    <div class="comment-header">
+                        <span class="comment-author">{{ comment.name }}</span>
+                        <span class="comment-date">{{ comment.created_at|date:"F d, Y" }}</span>
+                    </div>
+                    <div class="comment-text">
+                        {{ comment.text|linebreaks }}
+                    </div>
+                </div>
+            {% empty %}
+                <div class="no-results">
+                    <p>No comments yet. Be the first to comment!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const likeBtn = document.getElementById("likeBtn");
+    if (likeBtn) {
+        likeBtn.addEventListener("click", function () {
+            const slug = this.dataset.postSlug;
+            fetch(`/like/${slug}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'liked') {
+                        document.getElementById("likeCount").innerText = data.likes;
+                    } else {
+                        alert("You've already liked this post.");
+                    }
+                });
+        });
+    }
+});
+</script>
 {% endblock %}
