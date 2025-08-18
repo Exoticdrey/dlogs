@@ -69,11 +69,21 @@ class Post(models.Model):
     def get_recent_comments(self, limit=5):
         return self.comments.all()[:limit]
 
+# LIKES: new model
+class Like(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
+    ip_address = models.GenericIPAddressField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('post', 'ip_address')
+
+# REPLIES: update Comment model
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     name = models.CharField(max_length=100)
     text = models.TextField()
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     is_approved = models.BooleanField(default=True)
 
