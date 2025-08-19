@@ -1,7 +1,6 @@
 from django import forms
 from .models import Comment
 
-
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
@@ -35,3 +34,15 @@ class CommentForm(forms.ModelForm):
         if len(text) < 5:
             raise forms.ValidationError('Comment must be at least 10 characters long.')
         return text
+
+
+# ✅ Add this below your CommentForm
+class SearchForm(forms.Form):
+    query = forms.CharField(
+        label='Search',
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Search blog posts...'
+        })
+    )
