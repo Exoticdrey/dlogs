@@ -69,26 +69,19 @@ class Post(models.Model):
     def get_recent_comments(self, limit=5):
         return self.comments.all()[:limit]
 
-# LIKES: new model
-class Like(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
-    ip_address = models.GenericIPAddressField()
+
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    name = models.CharField(max_length=100)
+    text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    is_approved = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ('post', 'ip_address')
-
-# REPLIES: update Comment model
-class Comment(models.Model):
-    post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='comments')
-    name = models.CharField(max_length=100)
-    email = models.EmailField()
-    text = models.TextField()
-    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def is_reply(self):
-        return self.parent is not None
+        ordering = ['-created_at']
 
     def __str__(self):
-        return f'Comment by {self.name}'
+        return f'Comment by {self.name} on {self.post.title}'
+
+    def get_short_text(self):
+        return self.text[:100] + '...' if len(self.text) > 100 else self.text
