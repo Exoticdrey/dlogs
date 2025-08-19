@@ -3,7 +3,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.contrib import messages
 from django.conf import settings
-from .models import Post, Category, Comment, Like
+from .models import Post, Category, Comment
 from django.http import JsonResponse
 from .forms import CommentForm, SearchForm
 from django.contrib.auth import get_user_model
