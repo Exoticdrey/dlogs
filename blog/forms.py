@@ -3,15 +3,9 @@ from .models import Comment
 
 
 class CommentForm(forms.ModelForm):
-    parent = forms.ModelChoiceField(
-        queryset=Comment.objects.all(),
-        required=False,
-        widget=forms.HiddenInput()
-    )
-
     class Meta:
         model = Comment
-        fields = ['name', 'text', 'parent']
+        fields = ['name', 'text']
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -41,16 +35,3 @@ class CommentForm(forms.ModelForm):
         if len(text) < 5:
             raise forms.ValidationError('Comment must be at least 10 characters long.')
         return text
-
-
-class SearchForm(forms.Form):
-    query = forms.CharField(
-        max_length=255,
-        widget=forms.TextInput(attrs={
-            'class': 'search-input',
-            'placeholder': 'Search posts...',
-            'type': 'search'
-        }),
-        label='',
-        required=False
-    )
