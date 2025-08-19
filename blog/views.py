@@ -37,38 +37,34 @@ def home(request):
 
 
 def post_detail(request, slug):
-    post = get_object_or_404(Post, slug=slug)
-    comments = post.comments.filter(parent__isnull=True).order_by('-created_at')  # top-level only
-
+    """Individual post detail view"""
+    post = get_object_or_404(Post, slug=slug, is_published=True)
+    comments = post.comments.filter(is_approved=True)
+    categories = Category.objects.all()
+    recent_posts = Post.objects.filter(is_published=True).exclude(id=post.id)[:4]
+    
+    # Handle comment form submission
     if request.method == 'POST':
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
             comment.post = post
             comment.save()
-            return redirect('blog:post_detail', slug=slug)
+            messages.success(request, 'Your comment has been posted successfully!')
+            return redirect('blog:post_detail', slug=post.slug)
     else:
-        form = CommentForm()
-
-    return render(request, 'blog/post_detail.html', {
+        comment_form = CommentForm()
+    
+    context = {
         'post': post,
         'comments': comments,
-        'comment_form': form
-    })
+        'comment_form': comment_form,
+        'categories': categories,
+        'recent_posts': recent_posts,
+        'search_form': SearchForm(),
+    }
+    return render(request, 'blog/post_detail.html', context)
 
-def like_post(request, post_slug):
-    post = get_object_or_404(Post, slug=post_slug)
-    ip = get_client_ip(request)
-
-    like, created = Like.objects.get_or_create(post=post, ip_address=ip)
-    return JsonResponse({
-        'status': 'liked' if created else 'already_liked',
-        'likes': post.likes.count()
-    })
-
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    return x_forwarded_for.split(',')[0] if x_forwarded_for else request.META.get('REMOTE_ADDR')
 
 
 def create_superuser_if_not_exists():
