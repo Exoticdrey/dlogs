@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.conf import settings
 from .models import Post, Category, Comment
 from django.http import JsonResponse
-from .forms import CommentForm, SearchForm
+from .forms import CommentForm
 from django.contrib.auth import get_user_model
 
 def home(request):
